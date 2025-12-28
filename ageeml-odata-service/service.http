@@ -1,0 +1,45 @@
+@service_HostAddress = http://localhost:5155
+
+### Estados collection
+GET {{service_HostAddress}}/api/v1/Estados
+Accept: application/json
+
+### Estados count
+GET {{service_HostAddress}}/api/v1/Estados/$count
+Accept: text/plain
+
+### Estado by key (parentheses)
+GET {{service_HostAddress}}/api/v1/Estados(1)
+Accept: application/json
+
+### Estado by key (slash)
+GET {{service_HostAddress}}/api/v1/Estados/1
+Accept: application/json
+
+### Municipios filtered by estadoId
+GET {{service_HostAddress}}/api/v1/Municipios?$filter=estadoId%20eq%201
+Accept: application/json
+
+### Localidades with paging
+GET {{service_HostAddress}}/api/v1/Localidades?$top=25&$skip=50
+Accept: application/json
+
+### Localidades with text filter
+GET {{service_HostAddress}}/api/v1/Localidades?$filter=contains(nombre,'San')
+Accept: application/json
+
+### Localidades with $select and $expand
+GET {{service_HostAddress}}/api/v1/Localidades?$select=id,nombre,municipioId&$expand=municipio($select=id,nombre)
+Accept: application/json
+
+### Localidades with $compute
+GET {{service_HostAddress}}/api/v1/Localidades?$compute=lat%20add%20lng%20as%20latLngSum,toupper(nombre)%20as%20nombreMayuscula&$select=id,lat,lng,latLngSum,nombreMayuscula
+Accept: application/json
+
+### Municipios with $expand
+GET {{service_HostAddress}}/api/v1/Municipios?$expand=estado
+Accept: application/json
+
+### Example using $skiptoken (paste value from @odata.nextLink)
+GET {{service_HostAddress}}/api/v1/Localidades?$skiptoken={paste-token-here}
+Accept: application/json

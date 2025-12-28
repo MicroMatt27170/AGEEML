@@ -1,0 +1,7 @@
+/.output
+/.ageeml-files
+/mysql/*.sql
+/postgresql/*.sql
+/sqlite/*.sql
+/importer/bin/
+/importer/obj/

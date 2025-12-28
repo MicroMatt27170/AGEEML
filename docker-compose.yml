@@ -1,0 +1,47 @@
+services:
+  # MySQL Service
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_container
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ageeml
+    ports:
+      - "3306:3306"
+    volumes:
+      - ageeml_mysql_data:/var/lib/mysql
+      - ./mysql/ageeml.sql.gz:/docker-entrypoint-initdb.d/ageeml.sql.gz:ro
+
+  # PostgreSQL Service
+  postgres:
+    image: postgres:18
+    container_name: postgres_container
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: ageeml
+    ports:
+      - "5432:5432"
+    volumes:
+      - ageeml_postgres_data:/var/lib/postgresql
+
+  odata-service:
+    build:
+      context: .
+      dockerfile: ageeml-odata-service/Dockerfile
+    pull_policy: build
+    container_name: odata_service
+    restart: unless-stopped
+    ports:
+      - "8082:8080"
+    # environment:
+    #   # Set database provider: sqlite | mysql | postgres | postgresql
+    #   - Database__Provider=sqlite
+    #   # Connection string for the selected provider
+    #   - Database__ConnectionString=Data Source=sqlite/ageeml.db
+
+volumes:
+  ageeml_mysql_data:
+  ageeml_postgres_data:

@@ -1,6 +1,6 @@
 # Áreas Geoestadísticas Estatales, Municipales y Localidades
 
-Base de Datos del INEGI en MySQL
+Base de Datos del INEGI en MySQL, PostgreSQL y SQLite
 
 ![INEGI AGEEML](https://developarts.com/bl-content/uploads/banner_ageeml.png)
 ![GitHub tag (latest by date)](https://img.shields.io/github/v/release/developarts/AGEEML?style=for-the-badge)
@@ -10,7 +10,7 @@ Base de Datos del INEGI en MySQL
 
 El [INEGI](http://www.inegi.org.mx/) cuenta con **“Catálogo Único de Claves de Áreas Geoestadísticas Estatales, Municipales y Localidades”**  de la república mexicana que actualiza cada mes. El archivo fuente se encuentra en varios formatos y se puede descargar desde la sección [Catálogos Predefinidos](https://www.inegi.org.mx/app/ageeml/) y consultar el documento de [descripción](https://www.inegi.org.mx/contenidos/app/ageeml/Ayuda/Ayuda_Gral_Cat_Unico.pdf) de los campos.
 
-En este proyecto, extraigo toda la información de un archivo _CSV_ versión _UTF-8_ y lo convierto a una base de datos MySQL.
+En este proyecto, extraigo toda la información de un archivo _CSV_ versión _UTF-8_ y lo convierto a bases de datos MySQL, PostgreSQL y SQLite.
 
 <!-- pagebreak -->
 
@@ -20,7 +20,8 @@ En este proyecto, extraigo toda la información de un archivo _CSV_ versión _UT
 2. [Coordenadas Geográficas](#link2)
 3. [Descarga](#link3)
 4. [Diccionario de Datos](#link4)
-5. [Actualizaciones](#link5)
+5. [Contribuciones](#link6)
+6. [Actualizaciones](#link5)
 
 <!-- toc -->
 
@@ -34,9 +35,9 @@ El archivo contiene 3 tablas: `estados`, `municipios` y `localidades`. El diseñ
 
 He importado todos los campos que vienen en la base de datos del [INEGI](http://www.inegi.org.mx/), se pueden consultar en la sección _"Diccionario de Datos"_. Los campos importados están marcados en **negrita**.
 
-La versión actuial es: **2020.10.v01**
+La versión actual es: **2025.11**
 
-La fecha de corte corresponde a **OCT 2020**
+La fecha de corte corresponde a **NOV 2025**. **Este dato es importante porque garantiza que el catálogo está actualizado a noviembre de 2025.**
 
 Conteo de registros:
 
@@ -55,9 +56,59 @@ Los campos `latitud` y `longitud` vienen originalmente en un sistema de coordena
 
 ## Descarga <a name="link3"></a>
 
-La base de datos MySQL se puede descargar desde el proyecto de GitHub dándo click en el siguiente enlace:
+Archivos de descarga por motor y formato:
 
-[![Descarga aquí](http://developarts.com/bl-content/uploads/github.png)](https://github.com/developarts/AGEEML/releases/latest)
+| Formato | MySQL | PostgreSQL | SQLite |
+| --- | --- | --- | --- |
+| sql | [![Descarga](http://developarts.com/bl-content/uploads/github.png)](mysql/ageeml.sql) | [![Descarga](http://developarts.com/bl-content/uploads/github.png)](postgresql/ageeml.sql) | [![Descarga](http://developarts.com/bl-content/uploads/github.png)](sqlite/ageeml.sql) |
+| sql.gz | [![Descarga](http://developarts.com/bl-content/uploads/github.png)](mysql/ageeml.sql.gz) | [![Descarga](http://developarts.com/bl-content/uploads/github.png)](postgresql/ageeml.sql.gz) | [![Descarga](http://developarts.com/bl-content/uploads/github.png)](sqlite/ageeml.sql.gz) |
+| db | — | — | [![Descarga](http://developarts.com/bl-content/uploads/github.png)](sqlite/ageeml.db) |
+
+## Estructura del repositorio
+
+- `mysql/`, `postgresql/`, `sqlite/`: scripts SQL (`.sql`) y comprimidos (`.sql.gz`) listos para importar.
+- `sqlite/`: incluye además `ageeml.db` generado automáticamente.
+- `importer/`: generador de SQL y base SQLite a partir del CSV del INEGI.
+- `ageeml-odata-service/`: servicio OData para consumir el catálogo (Estados, Municipios y Localidades).
+- `docker-compose.yml`: entorno de ejemplo con MySQL, PostgreSQL y el servicio OData.
+
+Los datos están **actualizados a noviembre de 2025**. Este punto es crítico para asegurar que las claves y catálogos reflejan el último corte del INEGI.
+
+### Regenerar SQL y base de datos (importer)
+
+Puedes ejecutar el importador para sobrescribir los `.sql` y `.sql.gz` de MySQL, PostgreSQL y SQLite. En el caso de SQLite, también actualiza `sqlite/ageeml.db`. Esto descarga el archivo oficial del INEGI AGEEML y garantiza que los datos quedan actualizados.
+
+```bash
+DOTNET_ENVIRONMENT=Development dotnet run --project importer
+```
+
+## Servicio OData
+
+El servicio `ageeml-odata-service` expone un API OData con las entidades **Estados**, **Municipios** y **Localidades**. Sirve una base de datos lista para usarse y permite consultas con filtros y proyecciones.
+
+Ejemplos de consultas:
+
+- `/api/v1/Estados?$select=id,nombre`
+- `/api/v1/Municipios?$filter=estadoId eq 1`
+- `/api/v1/Localidades?$filter=poblacion gt 1000000&$count=true`
+- `/api/v1/Localidades?$top=10&$skip=20`
+- `/api/v1/Localidades?$expand=municipio($select=id,nombre)`
+
+### Levantar con Docker Compose
+
+Puedes iniciar MySQL y PostgreSQL como ejemplo, además del servicio OData:
+
+```bash
+docker compose up
+```
+
+### Imagen pública del servicio OData
+
+Si no quieres construir la imagen localmente, puedes usar la imagen pública:
+
+```
+micromatt27170/ageeml-odata-service
+```
 
 
 
@@ -69,7 +120,7 @@ Descripción de los campos de cada tabla del proyecto
 ### estados
 | Columna | tipo | Comentarios |
 | --- | --- | --- |
-| `id` | _int(11)_ | ![Llave Primaria](http://developarts.com/bl-content/uploads/iconkey.png) |
+| `id` | _int(11)_ | 🔑 |
 | `clave` | _varchar(2)_ | **Cve_Ent** - Clave de la entidad |
 | `nombre` | _varchar(40)_ | **Nom_Ent** - Nombre de la entidad |
 | `abrev` | _varchar(10)_ | **Nom_Abr** - Nombre abreviado de la entidad |
@@ -79,7 +130,7 @@ Descripción de los campos de cada tabla del proyecto
 ### municipios
 | Columna | tipo | Comentarios |
 | --- | --- | --- |
-| `id` | _int(11)_ | ![Llave Primaria](http://developarts.com/bl-content/uploads/iconkey.png) |
+| `id` | _int(11)_ | 🔑 |
 | `estado_id` | _int(11)_ | Relación: _`estados -> id`_ |
 | `clave` | _varchar(3)_ | **Cve_Mun** - Clave del municipio |
 | `nombre` | _varchar(100)_ | **Nom_Mun** - Nombre del municipio |
@@ -89,7 +140,7 @@ Descripción de los campos de cada tabla del proyecto
 ### localidades
 | Columna | tipo | Comentarios |
 | --- | --- | --- |
-| `id` | _int(11)_ | ![Llave Primaria](http://developarts.com/bl-content/uploads/iconkey.png) |
+| `id` | _int(11)_ | 🔑 |
 | `municipio_id` | _int(11)_ | Relación: _`municipios -> id`_ |
 | `clave` | _varchar(4)_ | **Cve_Loc** – Clave de la localidad |
 | `nombre` | _varchar(100)_ | **Nom_Loc** - Nombre de la localidad |
@@ -112,11 +163,15 @@ Descripción de los campos de cada tabla del proyecto
 
 ![Alt](https://repobeats.axiom.co/api/embed/3e48b760f2599bf26c7a2c3d347dd892298f1054.svg "Repobeats analytics image")
 
+## Contribuciones <a name="link6"></a>
+
+Este repositorio es un fork de https://github.com/developarts/AGEEML. El objetivo es complementar el proyecto con más proveedores de bases de datos más allá de MySQL, además de servicios para importar y actualizar las bases desde INEGI y un servicio out-of-the-box para microservicios (OData/WebAPI).
+
 
 
 ## Actualizaciones <a name="link5"></a>
 
-
+* `[2025-12-28]` Se agregó soporte a bases de datos para PostgreSQL y SQLite, se creó un servicio para importar las bases desde el INEGI y un microservicio WebAPI con .NET.
 * `[2020-11-20]` Se actualizó la información del INEGI a **OCT2020**.
 *  `[2020-11-19]` El nombre del proyecto de renombró a **AGEEML**.
 * `[2018-10-18]` Se actualizó la información del INEGI a **SEP2018**.
