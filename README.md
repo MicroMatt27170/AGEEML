@@ -3,10 +3,6 @@
 Base de Datos del INEGI en MySQL, PostgreSQL y SQLite
 
 ![INEGI AGEEML](https://developarts.com/bl-content/uploads/banner_ageeml.png)
-![GitHub tag (latest by date)](https://img.shields.io/github/v/release/developarts/AGEEML?style=for-the-badge)
-[![Packagist](https://img.shields.io/packagist/l/doctrine/orm.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
-![GitHub all releases](https://img.shields.io/github/downloads/developarts/AGEEML/total?style=for-the-badge)
-[![Donate with PayPal](https://img.shields.io/badge/PayPal-Donate-yellow.svg?style=for-the-badge)](https://www.paypal.me/developarts)
 
 El [INEGI](http://www.inegi.org.mx/) cuenta con **“Catálogo Único de Claves de Áreas Geoestadísticas Estatales, Municipales y Localidades”**  de la república mexicana que actualiza cada mes. El archivo fuente se encuentra en varios formatos y se puede descargar desde la sección [Catálogos Predefinidos](https://www.inegi.org.mx/app/ageeml/) y consultar el documento de [descripción](https://www.inegi.org.mx/contenidos/app/ageeml/Ayuda/Ayuda_Gral_Cat_Unico.pdf) de los campos.
 
@@ -28,10 +24,6 @@ En este proyecto, extraigo toda la información de un archivo _CSV_ versión _UT
 ## Diseño <a name="link1"></a>
 
 El archivo contiene 3 tablas: `estados`, `municipios` y `localidades`. El diseño de la base de datos se muestra en la siguiente imagen:
-
-
-![Diseño de Base de Datos](http://developarts.com/bl-content/uploads/mysql_inegi.png)
-
 
 He importado todos los campos que vienen en la base de datos del [INEGI](http://www.inegi.org.mx/), se pueden consultar en la sección _"Diccionario de Datos"_. Los campos importados están marcados en **negrita**.
 
@@ -60,7 +52,6 @@ Archivos de descarga por motor y formato:
 
 | Formato | MySQL | PostgreSQL | SQLite |
 | --- | --- | --- | --- |
-| sql | [![Descarga](http://developarts.com/bl-content/uploads/github.png)](mysql/ageeml.sql) | [![Descarga](http://developarts.com/bl-content/uploads/github.png)](postgresql/ageeml.sql) | [![Descarga](http://developarts.com/bl-content/uploads/github.png)](sqlite/ageeml.sql) |
 | sql.gz | [![Descarga](http://developarts.com/bl-content/uploads/github.png)](mysql/ageeml.sql.gz) | [![Descarga](http://developarts.com/bl-content/uploads/github.png)](postgresql/ageeml.sql.gz) | [![Descarga](http://developarts.com/bl-content/uploads/github.png)](sqlite/ageeml.sql.gz) |
 | db | — | — | [![Descarga](http://developarts.com/bl-content/uploads/github.png)](sqlite/ageeml.db) |
 
@@ -157,11 +148,6 @@ Descripción de los campos de cada tabla del proyecto
 | `femenino` | _int(11)_ | **Pob_Femenina** - Población Femenina |
 | `viviendas` | _int(11)_ | **Total De Viviendas Habitadas** - Total De Viviendas Habitadas |
 | `activo` | tinyint(1) |  |
-
-
-## Stats
-
-![Alt](https://repobeats.axiom.co/api/embed/3e48b760f2599bf26c7a2c3d347dd892298f1054.svg "Repobeats analytics image")
 
 ## Contribuciones <a name="link6"></a>
 
